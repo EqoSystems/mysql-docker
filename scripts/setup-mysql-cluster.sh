@@ -16,6 +16,12 @@ if [ -d "./$VERSION" ]; then
 	    ;;
 
 		build)
+            gcloud auth activate-service-account --key-file luxx-192320-7111cd714860.json
+            gcloud components install core gsutil kubectl
+            gcloud components update --quiet
+            gcloud config set project luxx-192320
+            gcloud config set compute/zone us-east4-a
+            export PROJECT_ID="$(gcloud config get-value project -q)"
 
 			if [ -d "../env/$ENVIRONMENT" ];  then
 				echo "Copying $ENVIRONMENT environment files..."
@@ -32,12 +38,6 @@ if [ -d "./$VERSION" ]; then
 				cp -v ../template/cnf/*.cnf ./cnf/
 
 				echo "Done"
-			else
-				cp ../env/prod/*.cnf ./cnf/
-	            docker build -t us.gcr.io/luxx-192320/luxx-mysql-cluster-prod:$VERSION .
-				docker push us.gcr.io/luxx-192320/luxx-mysql-cluster-prod
-				cp ../template/cnf/*.cnf ./cnf/
-				echo "Done"
 			fi
 		;;
 
@@ -46,7 +46,12 @@ if [ -d "./$VERSION" ]; then
         ;;
 
         deploy)
-            docker run dotcms:"$VERSION"
+            docker run -d --net=luxx-mysql-cluster-local --name=management1 --ip=10.100.0.2 us.gcr.io/luxx-192320/luxx-mysql-cluster-local:7.6 ndb_mgmd
+		    docker run -d --net=luxx-mysql-cluster-local --name=ndb1 --ip=10.100.0.3 us.gcr.io/luxx-192320/luxx-mysql-cluster-local:7.6 ndbd
+		    docker run -d --net=luxx-mysql-cluster-local --name=ndb2 --ip=10.100.0.4 us.gcr.io/luxx-192320/luxx-mysql-cluster-local:7.6 ndbd
+		    docker run -d --net=luxx-mysql-cluster-local --name=mysql1 --ip=10.100.0.10 -e MYSQL_RANDOM_ROOT_PASSWORD=true us.gcr.io/luxx-192320/luxx-mysql-cluster-local:7.6 mysqld
+		    docker run -d --net=luxx-mysql-cluster-local --name=mysql2 --ip=10.100.0.11 -e MYSQL_RANDOM_ROOT_PASSWORD=true us.gcr.io/luxx-192320/luxx-mysql-cluster-local:7.6 mysqld
+		    docker run -it --net=luxx-mysql-cluster-local us.gcr.io/luxx-192320/luxx-mysql-cluster-local:7.6 ndb_mgm
         ;;
 
         run)
