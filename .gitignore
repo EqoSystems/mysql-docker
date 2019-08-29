@@ -5,4 +5,4 @@
 **/*.js
 !index.js
 .env
-**/luxx-*.json
+**/*-*.json
