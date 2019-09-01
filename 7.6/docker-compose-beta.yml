@@ -1,0 +1,17 @@
+version: "3.3"
+services:
+  luxx-mgmt-db:
+    build:
+        context: .
+        dockerfile: Dockerfile-beta
+    image: us.gcr.io/luxx-192320/luxx-mysql-cluster-prod:7.6
+    volumes:
+      - ./scripts/db:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: q_writer
+      MYSQL_PASSWORD: password
+    security_opt:
+      - seccomp:unconfined

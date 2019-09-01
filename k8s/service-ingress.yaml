@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: luxx-mysql-beta
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "web-static-ip"
+spec:
+  tls:
+    - hosts:
+        - luxx.city
+        - www.luxx.city
+        - beta-www.luxx.city
+        - beta-vendor.luxx.city
+        - beta-api.luxx.city
+        - luxx.digital
+        - www.luxx.digital
+        - beta-www.luxx.digital
+        - beta-vendor.luxx.digital
+        - beta-api.luxx.digital
+      secretName: luxx-mysql-beta-tls
+  backend:
+    serviceName: luxx-mysql-beta
+    servicePort: 3306

@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: luxx-mysql-beta
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: luxx-mysql-beta
+  template:
+    metadata:
+      labels:
+        app: luxx-mysql-beta
+    spec:
+      containers:
+        - name: luxx-mysql-beta-mgmt1
+          image: us.gcr.io/luxx-192320/luxx-mysql-cluster-beta:7.6
+          command: ["ndb_mgmd"]
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: luxx-mysql-beta-persistent-storage
+              mountPath: /var/lib/mysql
+        - name: luxx-mysql-beta-ndbd1
+          image: us.gcr.io/luxx-192320/luxx-mysql-cluster-beta:7.6
+          command: ["ndbd"]
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: luxx-mysql-beta-persistent-storage
+              mountPath: /var/lib/mysql
+        - name: luxx-mysql-beta-ndbd2
+          image: us.gcr.io/luxx-192320/luxx-mysql-cluster-beta:7.6
+          command: ["ndbd"]
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: luxx-mysql-beta-persistent-storage
+              mountPath: /var/lib/mysql
+        - name: luxx-mysql-beta-mysqld1
+          image: us.gcr.io/luxx-192320/luxx-mysql-cluster-beta:7.6
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "password"
+            - name: MYSQL_USER
+              value: "q_writer"
+            - name: MYSQL_PASSWORD
+              value: "password"
+          command: ["mysqld"]
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: luxx-mysql-beta-persistent-storage
+              mountPath: /var/lib/mysql
+        - name: luxx-mysql-beta-mysqld2
+          image: us.gcr.io/luxx-192320/luxx-mysql-cluster-beta:7.6
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "password"
+            - name: MYSQL_USER
+              value: "q_writer"
+            - name: MYSQL_PASSWORD
+              value: "password"
+          command: ["mysqld"]
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: luxx-mysql-beta-persistent-storage
+              mountPath: /var/lib/mysql
+    volumes:
+      - name: luxx-mysql-beta-persistent-storage
+        persistentVolumeClaim:
+          claimName: luxx-mysql-beta-volumeclaim
