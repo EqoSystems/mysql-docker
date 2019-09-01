@@ -1,0 +1,9 @@
+**/.idea
+**/*.iml
+**/node_modules
+**/dist
+**/*.js
+!ecosystem.config*js
+!index*js
+.env
+**/*-*.json
