@@ -7,4 +7,5 @@
 !index*js
 .env
 **/*-*.json
+**/qorporate-*.json
 !package*json
