@@ -8,7 +8,7 @@
   "description": "Mysql Server Standalone 8.0",
   "license": "MIT",
   "scripts": {
-    "container:auth": "cat qorporate-infrastructure-1f4149d30bf6.json | docker login -u _json_key --password-stdin https://us.gcr.io",
+    "container:auth": "cat ~/qorporate-infrastructure-1f4149d30bf6.json | docker login -u _json_key --password-stdin https://us.gcr.io",
     "container:pull": "npm run container:auth && gcloud components update -q && gcloud auth configure-docker && docker pull mysql/mysql-server:latest",
     "container:push": "npm run container:auth && docker tag mysql:8.0 us.gcr.io/qorporate-infrastructure/mysql-8.0-standalone && docker push us.gcr.io/qorporate-infrastructure/mysql-8.0-standalone",
     "luxx:build:local": "./scripts/setup-mysql-cluster.sh 7.6 build local",
