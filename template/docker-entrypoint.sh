@@ -35,7 +35,7 @@ if [ "$1" = 'mysqld' ]; then
 	# Test that the server can start. We redirect stdout to /dev/null so
 	# only the error messages are left.
 	result=0
-	output=$("$@" --verbose --help 2>&1 > /dev/null) || result=$?
+	%%VALIDATE_CONFIG%%
 	if [ ! "$result" = "0" ]; then
 		echo >&2 '[Entrypoint] ERROR: Unable to start MySQL. Please check your configuration.'
 		echo >&2 "[Entrypoint] $output"
@@ -142,7 +142,6 @@ EOF
 				echo "GRANT ALL ON \`"$MYSQL_DATABASE"\`.* TO '"$MYSQL_USER"'@'%' ;" | "${mysql[@]}"
 			fi
 
-			echo 'FLUSH PRIVILEGES ;' | "${mysql[@]}"
 		elif [ "$MYSQL_USER" -a ! "$MYSQL_PASSWORD" -o ! "$MYSQL_USER" -a "$MYSQL_PASSWORD" ]; then
 			echo '[Entrypoint] Not creating mysql user. MYSQL_USER and MYSQL_PASSWORD must be specified to create a mysql user.'
 		fi
